@@ -10,6 +10,7 @@ public class Main {
 	static int k;
 	static int [][] feed; //양분 맵
 	static int [][] add;
+	static int [][] dead;
 	static HashMap<List<Integer>, PriorityQueue<Integer>> virus; //행, 열, 그 칸에 들어있는 바이러스들
 	static ArrayDeque<List<Integer>> q;
 	
@@ -24,6 +25,7 @@ public class Main {
         k = Integer.parseInt(st.nextToken());
         feed = new int [n][n];
         add = new int [n][n];
+        dead = new int [n][n];
         virus = new HashMap<>();
         q = new ArrayDeque<>();
         
@@ -57,6 +59,7 @@ public class Main {
         	
         }
         for(int i=0; i<k; i++) {
+        	
         	aging();
         	//한 사이클에서 aging 끝나고 마지막에 번식하자.
         	while(!q.isEmpty()) {
@@ -65,6 +68,7 @@ public class Main {
         	for(int r=0; r<n; r++) {
         		for(int c=0; c<n; c++) {
         			feed[r][c]+=add[r][c];
+        			feed[r][c]+=dead[r][c];
         		}
         	}
         }
@@ -81,6 +85,7 @@ public class Main {
     
     //사이클 따라 바이러스 먹이고, 나이 올리고, 소멸하고, 번식하기 위해 바로 접근하기 위해서는 해쉬맵?
     static void aging() {
+    	dead = new int [n][n];
     	for(List<Integer> key: virus.keySet()) {
     		PriorityQueue<Integer> end = new PriorityQueue<>();
     		int row = key.get(0);
@@ -97,10 +102,10 @@ public class Main {
 	        		}
 	    		}
 	    		else { //소멸
-	    			feed[row][col]+=(int) (age/2);
+	    			dead[row][col]+=(int) (age/2);
 	    		}
-	        	virus.replace(key, end);
 	    	}
+    		virus.replace(key, end);
     	}
     	//System.out.println(Arrays.deepToString(feed));
     	//System.out.println(virus);
@@ -116,7 +121,6 @@ public class Main {
 				List<Integer> loc = Arrays.asList(nr, nc);
 				if(virus.keySet().contains(loc)) {
 	        		virus.get(loc).offer(1); //나이 저장
-	        		
 	        	}
 	        	else { 
 	        		PriorityQueue<Integer> contains = new PriorityQueue<>();
