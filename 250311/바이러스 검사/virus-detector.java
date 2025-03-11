@@ -38,15 +38,17 @@ public class Main {
 		if(peopNum<=ability[0]) {
 			return peopNum;
 		}
-	    int tp = (peopNum-ability[0])/ability[1];
-	    int rest = (peopNum-ability[0])%ability[1];
-
-	    if(rest!=0){
-	        tp++;
-	    }
-	    tp++;
-
-	    return tp;
+		else {
+		    int tp = (peopNum-ability[0])/ability[1];
+		    int rest = (peopNum-ability[0])%ability[1];
+	
+		    if(rest!=0){
+		        tp++;
+		    }
+		    tp++;
+		    return tp;
+		}
+		
 	}
 
 }
