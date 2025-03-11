@@ -34,7 +34,6 @@ public class Main {
         		add[i][j]=Integer.parseInt(ss.nextToken());
         	}
         }
-        //System.out.println(Arrays.deepToString(feed));
         
         for(int i=0; i<m; i++) {
         	StringTokenizer sv = new StringTokenizer(bf.readLine());
@@ -43,89 +42,87 @@ public class Main {
         	
         	List<Integer> info = Arrays.asList(row, col);
         	
-        	if(virus.keySet().contains(info)) {
-        		virus.get(info).offer(Integer.parseInt(sv.nextToken())); //나이 저장
-        		
-        	}
-        	else { //virus = {[r,c]=[속해있는 마릿수, age1, age2...], ...}
+        	if(virus.containsKey(info)) {
+        		virus.get(info).offer(Integer.parseInt(sv.nextToken())); // 나이 저장
+        	} else { 
         		PriorityQueue<Integer> contains = new PriorityQueue<>();
         		contains.offer(Integer.parseInt(sv.nextToken()));
         		virus.put(info, contains);
         	}
-        	//System.out.println(virus);
-        	
-        	
         }
+
         for(int i=0; i<k; i++) {
         	aging();
-        	//한 사이클에서 aging 끝나고 마지막에 번식하자.
         	while(!q.isEmpty()) {
         		reproduction(q.poll());
         	}
         	for(int r=0; r<n; r++) {
         		for(int c=0; c<n; c++) {
-        			feed[r][c]+=add[r][c];
+        			feed[r][c] += add[r][c];
         		}
         	}
         }
-        int total=0;
+        
+        int total = 0;
         for(List<Integer> key : virus.keySet()) {
-        	//System.out.println(virus);
-        	int temp = virus.get(key).size();
-        	//System.out.println("temp= "+temp);
-        	total+=virus.get(key).size();
+        	total += virus.get(key).size();
         }
         System.out.println(total);
 	}
     
-    //사이클 따라 바이러스 먹이고, 나이 올리고, 소멸하고, 번식하기 위해 바로 접근하기 위해서는 해쉬맵?
+    // 바이러스 성장 및 소멸
     static void aging() {
-    	for(List<Integer> key: virus.keySet()) {
-    		PriorityQueue<Integer> end = new PriorityQueue<>();
+    	List<List<Integer>> toReproduce = new ArrayList<>(); // 번식할 바이러스 저장
+    	
+    	HashMap<List<Integer>, PriorityQueue<Integer>> newVirus = new HashMap<>(); // 새롭게 업데이트할 바이러스 정보 저장
+
+    	for(List<Integer> key : virus.keySet()) {
     		int row = key.get(0);
     		int col = key.get(1);
     		PriorityQueue<Integer> start = virus.get(key);
+    		
+    		PriorityQueue<Integer> end = new PriorityQueue<>();
+    		
     		while(!start.isEmpty()) {
 	    		int age = start.poll();
-	    		if(feed[row][col]>=age) { //양분이 충분해서 나이 증가
-	    			feed[row][col]-=age;
+	    		if(feed[row][col] >= age) { // 양분 충분하면 성장
+	    			feed[row][col] -= age;
 	    			age++;
 	    			end.offer(age);
-	    			if(age%5==0) { //번식해야되는 개체라면, 
-	        			q.offer(key);
+	    			if(age % 5 == 0) { 
+	        			toReproduce.add(new ArrayList<>(key));  // ✅ 새로운 리스트로 추가
 	        		}
+	    		} else { // 소멸
+	    			feed[row][col] += age / 2;
 	    		}
-	    		else { //소멸
-	    			feed[row][col]+=(int)age/2;
-	    		}
-	        	virus.replace(key, end);
 	    	}
+    		
+    		if (!end.isEmpty()) {
+    			newVirus.put(new ArrayList<>(key), end); // ✅ 새로운 키로 저장
+    		}
     	}
-    	//System.out.println(virus);
+
+    	virus = newVirus; // 업데이트된 바이러스 정보 적용
+    	q.addAll(toReproduce); // 번식할 바이러스 추가
     }
     
-    static void reproduction(List<Integer> key) {/////////////번식 따로 구현
+    // 번식
+    static void reproduction(List<Integer> key) {
     	int row = key.get(0);
     	int col = key.get(1);
-    	for(int i=0; i<8; i++) { //8방탐색
-			int nr = row+dx[i];
-			int nc = col+dy[i];
-			if(nr>=0 && nr<n && nc>=0 && nc<n) { //나이가 1인 바이러스 생성
+    	for(int i=0; i<8; i++) { 
+			int nr = row + dx[i];
+			int nc = col + dy[i];
+			if(nr >= 0 && nr < n && nc >= 0 && nc < n) {  
 				List<Integer> loc = Arrays.asList(nr, nc);
-				if(virus.keySet().contains(loc)) {
-	        		virus.get(loc).offer(1); //나이 저장
-	        		
-	        	}
-	        	else { //virus = {[r,c]=[속해있는 마릿수, age1, age2...], ...}
+				if(virus.containsKey(loc)) {
+	        		virus.get(loc).offer(1);  
+	        	} else {  
 	        		PriorityQueue<Integer> contains = new PriorityQueue<>();
 	        		contains.offer(1);
-	        		virus.put(loc, contains);
+	        		virus.put(new ArrayList<>(loc), contains); // ✅ 새로운 키로 저장
 	        	}
 			}
 		}
     }
-    
-    
-    
-
 }
