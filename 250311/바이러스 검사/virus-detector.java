@@ -9,7 +9,7 @@ public class Main {
 	static int n;
 	static int [] guest;
 	static int [] ability;
-	static int result;
+	static long result;
 	
 	    public static void main(String[] args) throws Exception {
 	        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
@@ -39,13 +39,15 @@ public class Main {
 			return 1;
 		}
 		else {
-		    int tp = (peopNum-ability[0])/ability[1];
-		    int rest = (peopNum-ability[0])%ability[1];
-	
+		    int tp = (peopNum-ability[0])/ability[1]; //(232-8)/6 = 37.333333-> 37
+		    //System.out.println("tp="+tp);
+		    int rest = (peopNum-ability[0])%ability[1]; //(232-8)/6 = 37.333333-> 37
+		    //System.out.println("rest="+rest);
 		    if(rest!=0){
 		        tp++;
 		    }
 		    tp++;
+		    //System.out.println("result="+tp);
 		    return tp;
 		}
 		
