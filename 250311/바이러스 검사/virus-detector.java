@@ -35,7 +35,7 @@ public class Main {
 	
 
 	static int check_pp(int peopNum){
-		if(peopNum<ability[0]) {
+		if(peopNum<=ability[0]) {
 			return peopNum;
 		}
 	    int tp = (peopNum-ability[0])/ability[1];
