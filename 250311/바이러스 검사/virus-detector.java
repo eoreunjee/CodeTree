@@ -1,6 +1,9 @@
 import java.util.*;
 import java.io.*;
 
+
+
+
 public class Main {
 
 	static int n;
@@ -24,7 +27,7 @@ public class Main {
 	        ability[1]=Integer.parseInt(ss.nextToken());
 
 	        result=0;
-	        for(int p:guest){
+	        for(int p: guest){
 	            result+=check_pp(p);
 	        }
 	        System.out.println(result);
@@ -32,6 +35,9 @@ public class Main {
 	
 
 	static int check_pp(int peopNum){
+		if(peopNum<ability[0]) {
+			return peopNum;
+		}
 	    int tp = (peopNum-ability[0])/ability[1];
 	    int rest = (peopNum-ability[0])%ability[1];
 
