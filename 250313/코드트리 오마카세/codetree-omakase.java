@@ -24,9 +24,9 @@ public class Main {
         rail = new HashMap<>();
         guests = new HashMap<>();
         
-//        for(int i=0; i<L; i++) {
-//        	rail.put(i, new ArrayDeque<String>());
-//        }
+        for(int i=0; i<L; i++) {
+        	rail.put(i, new ArrayDeque<String>());
+        }
         
         //T와 x의 관계 계산. x=0~L-1, t가 커질수록 x는 1씩 커짐. x=t를 L로 나눈 나머지.
         //x 0 1 2 3 4
