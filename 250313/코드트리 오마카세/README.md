@@ -1,7 +1,7 @@
 ## 정답은 출력되지만 메모리초과, 메모리초과를 해결하니 시간 초과가 발생하였다.
 쿼리를 미리 정리해서 불필요한 계산을 줄이거나, 매 쿼리마다 반복적으로 계산하는 부분을 최적화해야 합니다. 예를 들어, 미리 쿼리를 처리하고 결과를 캐싱하는 방법을 고려해야한다.
 
-## 정답 코드
+# 정답 코드
 시간 복잡도:
 입력 처리: Q개의 쿼리를 처리하는 부분에서 각 쿼리에 대해 O(1). 따라서 입력 처리 시간은 O(Q).
 
@@ -171,6 +171,297 @@ public class Main {
         }
     }
 }
+```
+
+# 내 코드
+
+## 시간 복잡도:
+
+## 입력 처리: 입력 처리에서 Q개의 쿼리를 처. 각 쿼리에 대해 O(1). 따라서 입력 처리 시간은 O(Q).
+
+## 쿼리 처리:
+각 쿼리에 대해, 손님의 상태와 초밥을 관리하면서 guests와 rail을 업데이트.
+guests와 rail에서 초밥을 찾는 데는 최악의 경우 O(N) 시간. 이는 손님 수와 초밥의 수가 각각 N일 때 발생.
+각 쿼리에 대해 초밥을 찾고 상태를 업데이트하는 데 최대 O(N). 따라서 전체 쿼리 처리 시간은 O(Q * N).
+
+## 시간 복잡도:
+전체 시간 복잡도는 O(Q * N). Q개의 쿼리를 처리하는 데 각 쿼리에서 최악의 경우 O(N) 시간이 걸리기 때문.
+
+## 메모리 복잡도:
+guests, rail, id 등:
+guests: 각 손님의 상태를 저장하는 HashMap으로, N명의 손님에 대해 O(N)의 메모리를 차지.
+rail: 초밥의 위치를 저장하는 HashMap으로, 초밥의 수에 비례하여 O(N)의 메모리를 차지.
+id: 손님의 이름과 ID를 매핑하는 HashMap으로, O(N)의 메모리를 차지.
+
+전체 메모리 복잡도:
+전체 메모리 복잡도는 O(N). guests, rail, id는 모두 손님의 수 N에 비례하는 메모리를 차지.
+
+```java
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	
+	static int L;
+	static int Q;
+	static int t;
+	static int pivot;
+	static int loc;
+	static HashMap<String, Integer> id;
+	static int idd;
+	static HashMap<Integer, ArrayDeque<Integer>> rail;
+	static HashMap<Integer,int []> guests;
+	static int time=0;
+	static int sushi_num;
+	static int people=0;
+	static ArrayDeque<Integer> bin;
+		
+	//이름을 id로 바꿔라.
+	
+    public static void main(String[] args) throws Exception {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+        
+        L = Integer.parseInt(st.nextToken());
+        Q = Integer.parseInt(st.nextToken());
+        rail = new HashMap<>();
+        guests = new HashMap<>();
+        id = new HashMap<>();
+        
+        for(int q=0; q<Q; q++) {
+        	time++;
+        	StringTokenizer cmd = new StringTokenizer(bf.readLine());
+        	int inc = Integer.parseInt(cmd.nextToken());
+        	t = Integer.parseInt(cmd.nextToken());
+        	if(time!=t) {
+        		if(guests.isEmpty()) {
+        			while(time!=t) {
+        				time = t;
+        			}
+        		}
+        		else {
+            		while(time!=t) {
+            			pivot = time%L;
+            			bin = new ArrayDeque<>();
+            			for(int g : guests.keySet()) {
+            				if(guests.get(g)[0]-pivot<0) {
+                    			loc = guests.get(g)[0]-pivot+L;
+                    			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+                    			for(int sushi: deque) {
+                    				if (sushi==g) {
+                    					guests.get(g)[1]--;
+                    					rail.get(loc).remove(sushi);
+                    					if(guests.get(g)[1]==0) {
+                    						bin.offer(g);
+                    						break;
+                    					}
+                    				}
+                    			}
+                    		}
+                    		else {
+                    			loc = guests.get(g)[0]-pivot;
+                    			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+                    			for(int sushi: deque) {
+                    				if (sushi==g) {
+                    					guests.get(g)[1]--;
+                    					rail.get(loc).remove(sushi);
+                    					if(guests.get(g)[1]==0) {
+                    						bin.offer(g);
+                    						break;
+                    					}	
+                    				}
+                    			}
+                    		}
+            			}
+            			while(!bin.isEmpty()) {
+                			guests.remove(bin.poll());
+                		}
+            			time++;
+            		}
+            	}
+        	}
+        	
+    		if(inc==100) {
+        		int x = Integer.parseInt(cmd.nextToken());
+        		String name = cmd.nextToken();
+        		if(!id.containsKey(name)) {
+        			id.put(name, idd);
+            		idd++;
+        		}
+        		
+        		
+        		pivot = t%L;
+        		if(x-pivot<0) {
+        			loc = x-pivot+L;
+        			rail.putIfAbsent(loc, new ArrayDeque<>());  
+        			rail.get(loc).offer(id.get(name));  
+        		}
+        		else {
+        			loc = x-pivot;
+        			rail.putIfAbsent(loc, new ArrayDeque<>());
+        			rail.get(loc).offer(id.get(name)); 
+
+        		}
+        		
+        		bin = new ArrayDeque<>();
+        		for(int g : guests.keySet()) {
+    				if(guests.get(g)[0]-pivot<0) {
+            			loc = guests.get(g)[0]-pivot+L;
+            			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(int sushi: deque) {
+            				if (sushi==g) {
+            					guests.get(g)[1]--;
+            					rail.get(loc).remove(sushi);
+            					if(guests.get(g)[1]==0) {
+            						bin.offer(g);
+            						break;
+            					}
+            				}
+            			}
+            		}
+            		else {
+            			loc = guests.get(g)[0]-pivot;
+            			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(int sushi: deque) {
+            				if (sushi==g) {
+            					guests.get(g)[1]--;
+            					rail.get(loc).remove(sushi);
+            					if(guests.get(g)[1]==0) {
+            						bin.offer(g);
+            						break;
+            					}	
+            				}
+            			}
+            		}
+    			}
+        		while(!bin.isEmpty()) {
+        			guests.remove(bin.poll());
+        		}
+        	}
+        	else if(inc==200) {
+        		int x = Integer.parseInt(cmd.nextToken());
+        		pivot = t%L;
+        		String gb = cmd.nextToken();
+        		int g = id.get(gb);
+        		int n = Integer.parseInt(cmd.nextToken());
+        		if(x-pivot<0) {
+        			loc = x-pivot+L;
+        			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+        			for(int sushi: deque) {
+        				if (sushi==g) {
+        					n--;
+        					rail.get(loc).remove(sushi);
+        					if(n==0) {
+        						break;
+        					}
+        				}
+        			}
+        			if(n>0) {
+        				guests.put(g, new int [] {x,n});
+        			}
+        			}
+        		else {
+        			loc = x-pivot;
+        			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+        			for(Integer sushi: deque) {
+        				if (sushi==g) {
+        					n--;
+        					rail.get(loc).remove(sushi);
+        					if(n==0) {
+        						break;
+        					}
+        				}
+        			}
+        			if(n>0) {
+        				guests.put(g, new int [] {x,n});
+        			}
+        		}
+        		bin = new ArrayDeque<>();
+        		for(int g2 : guests.keySet()) {
+    				if(guests.get(g2)[0]-pivot<0) {
+            			loc = guests.get(g2)[0]-pivot+L;
+            			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(int sushi: deque) {
+            				if (sushi==g2) {
+            					guests.get(g2)[1]--;
+            					rail.get(loc).remove(sushi);
+            					if(guests.get(g2)[1]==0) {
+            						bin.offer(g2);
+            						break;
+            					}
+            				}
+            			}
+            		}
+            		else {
+            			loc = guests.get(g2)[0]-pivot;
+            			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(int sushi: deque) {
+            				if (sushi==g2) {
+            					guests.get(g2)[1]--;
+            					rail.get(loc).remove(sushi);
+            					if(guests.get(g2)[1]==0) {
+            						bin.offer(g2);
+            						break;
+            					}	
+            				}
+            			}
+            		}
+    			}
+        		while(!bin.isEmpty()) {
+        			guests.remove(bin.poll());
+        		}
+        		
+        	}
+        	else if(inc==300) {
+        		pivot = t%L;
+        		bin = new ArrayDeque<>();
+        		for(int g : guests.keySet()) {
+    				if(guests.get(g)[0]-pivot<0) {
+            			loc = guests.get(g)[0]-pivot+L;
+            			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(int sushi: deque) {
+            				if (sushi==g) {
+            					guests.get(g)[1]--;
+            					rail.get(loc).remove(sushi);
+            					if(guests.get(g)[1]==0) {
+            						bin.offer(g);
+            						break;
+            					}
+            				}
+            			}
+            		}
+            		else {
+            			loc = guests.get(g)[0]-pivot;
+            			ArrayDeque<Integer> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(int sushi: deque) {
+            				if (sushi==g) {
+            					guests.get(g)[1]--;
+            					rail.get(loc).remove(sushi);
+            					if(guests.get(g)[1]==0) {
+            						bin.offer(g);
+            						break;
+            					}	
+            				}
+            			}
+            		}
+    			}
+    			while(!bin.isEmpty()) {
+        			guests.remove(bin.poll());
+        		}
+        		sushi_num=0;
+        		
+        		for(int r: rail.keySet()) {
+        			sushi_num+=rail.get(r).size();	
+        		}
+        		people=0;
+        		people+=guests.size();
+        		System.out.println(people+" "+sushi_num);
+            	
+        	}
+        }    
+    }
+}
+
 ```
 
 |유형|출처|
