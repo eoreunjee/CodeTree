@@ -24,9 +24,9 @@ public class Main {
         rail = new HashMap<>();
         guests = new HashMap<>();
         
-        for(int i=0; i<L; i++) {
-        	rail.put(i, new ArrayDeque<String>());
-        }
+//        for(int i=0; i<L; i++) {
+//        	rail.put(i, new ArrayDeque<String>());
+//        }
         
         //T와 x의 관계 계산. x=0~L-1, t가 커질수록 x는 1씩 커짐. x=t를 L로 나눈 나머지.
         //x 0 1 2 3 4
@@ -35,7 +35,7 @@ public class Main {
         //x-pivot= 0, 1, -3, -2, -1-> 2-5, 3-5, 4-5 
         for(int q=0; q<Q; q++) { //O(10^5)
 //        	System.out.println("현재 시간= "+time+" 주어진 시각= "+t);
-        	time++; //O(10^9)
+        	time++;//O(10^9)
         	StringTokenizer cmd = new StringTokenizer(bf.readLine());
         	int inc = Integer.parseInt(cmd.nextToken());
         	t = Integer.parseInt(cmd.nextToken());
@@ -45,8 +45,9 @@ public class Main {
 //                    System.out.println(entry.getKey() + ": " + Arrays.toString(entry.getValue()));
 //                }
         		if(guests.isEmpty()) {
-        			time=t;
-        			
+        			while(time!=t) {
+        				time++;
+        			}
         		}
         		if(!guests.isEmpty()) {////////////////////////////////////////////////////////////////////////
         			//해쉬맵 손님이름=[자리, 남은 초밥 개수]HashMap<String,int [자리, 남은 초밥개수]> guests;
@@ -75,7 +76,8 @@ public class Main {
                     		}
                     		else {
                     			loc = guests.get(g)[0]-pivot;
-                    			for(String sushi: rail.get(loc)) {
+                    			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+                    			for(String sushi: deque) {
                     				if (sushi.equals(g)) {
                     					guests.get(g)[1]--;
                     					rail.get(loc).remove(sushi);
@@ -107,13 +109,17 @@ public class Main {
         		if(x-pivot<0) {
         			loc = x-pivot+L;
 //        			System.out.println("loc= "+ loc);
-        			rail.get(loc).offer(name);
+        			rail.putIfAbsent(loc, new ArrayDeque<>());  // loc에 값이 없으면 새 ArrayDeque 할당
+        			rail.get(loc).offer(name);  // 이제 반드시 null이 아님
+
 //        			System.out.println("rail= "+rail);
         		}
         		else {
         			loc = x-pivot;
 //        			System.out.println("loc= "+ loc);
-        			rail.get(loc).offer(name);
+        			rail.putIfAbsent(loc, new ArrayDeque<>());  // loc에 값이 없으면 새 ArrayDeque 할당
+        			rail.get(loc).offer(name);  // 이제 반드시 null이 아님
+
 //        			System.out.println("rail= "+rail);
         		}
         		bin = new ArrayDeque<>();
@@ -137,7 +143,8 @@ public class Main {
             		}
             		else {
             			loc = guests.get(g)[0]-pivot;
-            			for(String sushi: rail.get(loc)) {
+            			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(String sushi: deque) {
             				if (sushi.equals(g)) {
             					guests.get(g)[1]--;
             					rail.get(loc).remove(sushi);
@@ -164,7 +171,8 @@ public class Main {
         		int n = Integer.parseInt(cmd.nextToken());
         		if(x-pivot<0) {
         			loc = x-pivot+L;
-        			for(String sushi: rail.get(loc)) {
+        			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+        			for(String sushi: deque) {
         				if (sushi.equals(g)) {
 //        					System.out.println(g+" is gone!");
         					n--;
@@ -184,7 +192,8 @@ public class Main {
         			}
         		else {
         			loc = x-pivot;
-        			for(String sushi: rail.get(loc)) {
+        			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+        			for(String sushi: deque) {
         				if (sushi.equals(g)) {
 //        					System.out.println(g+" is gone!");
         					n--;
@@ -223,7 +232,8 @@ public class Main {
             		}
             		else {
             			loc = guests.get(g2)[0]-pivot;
-            			for(String sushi: rail.get(loc)) {
+            			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(String sushi: deque) {
             				if (sushi.equals(g2)) {
             					guests.get(g2)[1]--;
             					rail.get(loc).remove(sushi);
@@ -271,7 +281,8 @@ public class Main {
 //            			System.out.println("Or this one?");
             			loc = guests.get(g)[0]-pivot;
 //            			System.out.println("loc = "+loc);
-            			for(String sushi: rail.get(loc)) {
+            			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
+            			for(String sushi: deque) {
             				if (sushi.equals(g)) {
             					guests.get(g)[1]--;
             					rail.get(loc).remove(sushi);
@@ -291,7 +302,7 @@ public class Main {
         		}
         		sushi_num=0;
         		
-        		for(int r=0; r<L; r++) {
+        		for(int r: rail.keySet()) {
 //        			System.out.println("rail= "+rail);
         			if(rail.get(r).size()>0) {
         				sushi_num+=rail.get(r).size();
