@@ -24,18 +24,18 @@ public class Main {
         rail = new HashMap<>();
         guests = new HashMap<>();
         
-        for(int i=0; i<L; i++) {
-        	rail.put(i, new ArrayDeque<String>());
-        }
+//        for(int i=0; i<L; i++) {
+//        	rail.put(i, new ArrayDeque<String>());
+//        }
         
         //T와 x의 관계 계산. x=0~L-1, t가 커질수록 x는 1씩 커짐. x=t를 L로 나눈 나머지.
         //x 0 1 2 3 4
         //8초 뒤 2 3 4 0 1 -> 0은 t(8)을 L(5)로 나눈 나머지 자리 3에 있다.
         //x는 3이므로, 0기준의 위치-> 0기준의 위치를 pivot으로 두고, pivot=3, pivot+1=4=x, pivot+2=5=0=x, pivot+3=6=1=x, pivot+4=7=2-> pivot + k가 L이상이면 pivot+k-L=x위치
         //x-pivot= 0, 1, -3, -2, -1-> 2-5, 3-5, 4-5 
-        for(int q=0; q<Q; q++) {
+        for(int q=0; q<Q; q++) { //O(10^5)
 //        	System.out.println("현재 시간= "+time+" 주어진 시각= "+t);
-        	time++;
+        	time++; //O(10^9)
         	StringTokenizer cmd = new StringTokenizer(bf.readLine());
         	int inc = Integer.parseInt(cmd.nextToken());
         	t = Integer.parseInt(cmd.nextToken());
@@ -45,14 +45,13 @@ public class Main {
 //                    System.out.println(entry.getKey() + ": " + Arrays.toString(entry.getValue()));
 //                }
         		if(guests.isEmpty()) {
-        			while(time!=t) {
-        				time++;
-        			}
+        			time=t;
+        			
         		}
         		if(!guests.isEmpty()) {////////////////////////////////////////////////////////////////////////
         			//해쉬맵 손님이름=[자리, 남은 초밥 개수]HashMap<String,int [자리, 남은 초밥개수]> guests;
         			//초밥 레일 HashMap<Integer, ArrayDeque<String>> rail;
-            		while(time!=t) {/////////////////////////////////////////////////////////////////////////////
+            		while(time!=t) {//
 //            			System.out.println("while문 내 현재 시간= "+time+" 주어진 시각= "+t);
             			pivot = time%L;
             			bin = new ArrayDeque<>();
