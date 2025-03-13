@@ -171,7 +171,7 @@ public class Main {
             			ArrayDeque<String> deque = rail.getOrDefault(loc, new ArrayDeque<>());
             			for(String sushi: deque) {
             				if (sushi.equals(g2)) {
-            					guests.get(g)[1]--;
+            					guests.get(g2)[1]--;
             					rail.get(loc).remove(sushi);
             					if(guests.get(g2)[1]==0) {
             						bin.offer(g2);
